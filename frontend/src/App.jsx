@@ -4,13 +4,13 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Home, Settings, SignUp, Profile, Login } from "./pages";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   useEffect(() => {
     checkAuth();
   }, []);
-  console.log(authUser);
 
   if (isCheckingAuth && !authUser)
     return (
@@ -40,6 +40,7 @@ export default function App() {
           element={authUser ? <Profile /> : <Navigate to="/login" />}
         />
       </Routes>
+      <Toaster />
     </div>
   );
 }
