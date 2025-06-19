@@ -16,7 +16,7 @@ import toast from "react-hot-toast";
 export default function SignUp() {
   const [showPass, setShowPass] = useState(false);
   const [formData, setFormData] = useState({
-    fullNamename: "",
+    fullName: "",
     email: "",
     password: "",
   });
@@ -24,7 +24,7 @@ export default function SignUp() {
   const { signUp, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
-    if (!formData.fullNamename.trim())
+    if (!formData.fullName.trim())
       return toast.error("Full name is required. ");
     if (!formData.email.trim()) return toast.error("Email is required");
     if (!/\S+@\S+\.\S+/.test(formData.email))
@@ -37,11 +37,9 @@ export default function SignUp() {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+    const success = validateForm();
+    if (success === true) signUp(formData);
   };
-
-  const success = validateForm();
-
-  if (success === true) signUp(formData);
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -97,6 +95,7 @@ export default function SignUp() {
                   type="email"
                   className={`input input-bordered w-full pl-10`}
                   placeholder="you@example.com"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -117,6 +116,7 @@ export default function SignUp() {
                   type={showPass ? "text" : "password"}
                   className={`input input-bordered w-full pl-10`}
                   placeholder="••••••••"
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })

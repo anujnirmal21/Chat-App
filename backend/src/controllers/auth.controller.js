@@ -101,6 +101,7 @@ const userLogout = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { profile_pic } = req.body;
+    // console.log(profile_pic);
     const userId = req.user._id;
     if (!profile_pic) {
       return res.status(400).json({ message: "profile pic required" });
