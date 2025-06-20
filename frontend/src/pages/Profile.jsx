@@ -5,7 +5,7 @@ import { Camera, Mail, User } from "lucide-react";
 const Profile = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
-  // console.log(authUser);
+  console.log(authUser.profile_pic);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -36,7 +36,11 @@ const Profile = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={selectedImg || authUser.profile_pic || "/avatar.png"}
+                src={
+                  selectedImg ||
+                  authUser.profile_pic ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIf4R5qPKHPNMyAqV-FjS_OTBB8pfUV29Phg&s"
+                }
                 alt="Profile"
                 className="size-32 rounded-full object-cover border-4 "
               />

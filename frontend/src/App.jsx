@@ -2,12 +2,14 @@ import { useEffect } from "react";
 import NavBar from "./component/NavBar";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Home, Settings, SignUp, Profile, Login } from "./pages";
-import { useAuthStore } from "./store/useAuthStore";
+import { useAuthStore } from "./store/useAuthStore.js";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
+import { useThemeStore } from "./store/useThemeStore.js";
 
 export default function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { theme } = useThemeStore();
   useEffect(() => {
     checkAuth();
   }, []);
@@ -19,7 +21,7 @@ export default function App() {
       </div>
     );
   return (
-    <div>
+    <div data-theme={theme}>
       <NavBar />
       <Routes>
         <Route
