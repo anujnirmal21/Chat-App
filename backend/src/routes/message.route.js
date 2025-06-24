@@ -8,6 +8,7 @@ import {
 
 const messageRoutes = Router();
 
+//message/
 messageRoutes.get("/users", protectRoute, getSidebarUsers);
 messageRoutes.get("/:id", protectRoute, getMessages);
 messageRoutes.post("/send/:id", protectRoute, sendMessage);
