@@ -40,13 +40,13 @@ const getMessages = async (req, res) => {
 
 const sendMessage = async (req, res) => {
   try {
-    const { text, image } = req.body;
-    const { id: receiverId } = req.params;
-    const senderId = req.user._id;
+    const { text, image } = await req.body;
+    const { id: receiverId } = await req.params;
+    const senderId = await req.user._id;
 
-    if (!text || !image) {
-      return res.status(401).json({ message: "all fields cannot be empty." });
-    }
+    // if (!text || !image) {
+    //   return res.status(401).json({ message: "all fields cannot be empty." });
+    // }
 
     let imageUrl;
     if (image) {
@@ -67,7 +67,7 @@ const sendMessage = async (req, res) => {
 
     return res
       .status(201)
-      .json({ message: "messages send successfully", newMessage });
+      .json({ message: "messages send successfully", messages: newMessage });
   } catch {
     console.error("Error : " + error.message);
     return res.status(500).json({ message: "internal server error." });

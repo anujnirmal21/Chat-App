@@ -1,10 +1,10 @@
 import { useChatStore } from "../store/useChatStore";
 import { useEffect, useRef } from "react";
-import MessageInput from "./MessageInput";
-import MessageSkeleton from "./skeletons/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
-import { formatMessageTime } from "../lib/utils";
 import ChatHeader from "./ChatHeader";
+import MessageInput from "./MessageInput";
+import Message from "./skletons/Message";
+import { formatMessageTime } from "../lib/utils";
 
 const ChatContainer = () => {
   const {
@@ -12,8 +12,8 @@ const ChatContainer = () => {
     getMessages,
     isMessagesLoading,
     selectedUser,
-    subscribeToMessages,
-    unsubscribeFromMessages,
+    // subscribeToMessages,
+    // unsubscribeFromMessages,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
@@ -21,14 +21,14 @@ const ChatContainer = () => {
   useEffect(() => {
     getMessages(selectedUser._id);
 
-    subscribeToMessages();
+    // subscribeToMessages();
 
-    return () => unsubscribeFromMessages();
+    // return () => unsubscribeFromMessages();
   }, [
     selectedUser._id,
     getMessages,
-    subscribeToMessages,
-    unsubscribeFromMessages,
+    // subscribeToMessages,
+    // unsubscribeFromMessages,
   ]);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const ChatContainer = () => {
     return (
       <div className="flex-1 flex flex-col overflow-auto">
         <ChatHeader />
-        <MessageSkeleton />
+        <Message />
         <MessageInput />
       </div>
     );
@@ -65,8 +65,10 @@ const ChatContainer = () => {
                 <img
                   src={
                     message.senderId === authUser._id
-                      ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
+                      ? authUser.profilePic ||
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIf4R5qPKHPNMyAqV-FjS_OTBB8pfUV29Phg&s"
+                      : selectedUser.profilePic ||
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIf4R5qPKHPNMyAqV-FjS_OTBB8pfUV29Phg&s"
                   }
                   alt="profile pic"
                 />

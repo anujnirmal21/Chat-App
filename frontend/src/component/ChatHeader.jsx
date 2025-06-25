@@ -14,7 +14,10 @@ const ChatHeader = () => {
           <div className="avatar">
             <div className="size-10 rounded-full relative">
               <img
-                src={selectedUser.profilePic || "/avatar.png"}
+                src={
+                  selectedUser.profilePic ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIf4R5qPKHPNMyAqV-FjS_OTBB8pfUV29Phg&s"
+                }
                 alt={selectedUser.fullName}
               />
             </div>
@@ -30,7 +33,10 @@ const ChatHeader = () => {
         </div>
 
         {/* Close button */}
-        <button onClick={() => setSelectedUser(null)}>
+        <button
+          className=" cursor-pointer"
+          onClick={() => setSelectedUser(null)}
+        >
           <X />
         </button>
       </div>
