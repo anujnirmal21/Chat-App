@@ -1,76 +1,68 @@
 import { create } from "zustand";
-import { toast } from "react-hot-toast";
-import { axiosInstance } from "./../lib/axios";
+import toast from "react-hot-toast";
+import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
-export const useChatStore = create((set, get) => {
-  return {
-    messages: [],
-    users: [],
-    selectedUser: null,
-    isMessageLoading: false,
-    isUserLoading: false,
-    setMessages: async (message) => {
-      set({ messages: message });
-    },
-    getUsers: async () => {
-      set({ isUserLoading: true });
-      try {
-        let res = await axiosInstance.get("/message/users");
-        set({ users: res.data.users });
-      } catch (error) {
-        toast.error(error.response.data.message);
-      } finally {
-        set({ isUserLoading: false });
-      }
-    },
-    getMessages: async (userId) => {
-      set({ isMessageLoading: true });
-      try {
-        let res = await axiosInstance.get(`/message/${userId}`);
-        set({ messages: res.data.messages });
-      } catch (error) {
-        toast.error(error.response.data.message);
-      } finally {
-        set({ isMessageLoading: false });
-      }
-    },
-    setSelectedUser: (userID) => {
-      set({ selectedUser: userID });
-    },
-    sendMessage: async (messageData) => {
-      const { selectedUser, messages } = get();
+export const useChatStore = create((set, get) => ({
+  messages: [],
+  users: [],
+  selectedUser: null,
+  isUsersLoading: false,
+  isMessagesLoading: false,
 
-      try {
-        let res = await axiosInstance.post(
-          `/message/send/${selectedUser._id}`,
-          messageData
-        );
+  getUsers: async () => {
+    set({ isUsersLoading: true });
+    try {
+      const res = await axiosInstance.get("/messages/users");
+      set({ users: res.data });
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isUsersLoading: false });
+    }
+  },
 
-        set({
-          messages: [...messages, res.data.messages],
-        });
-      } catch (error) {
-        const errorMsg =
-          error?.response?.data?.message ||
-          error?.message ||
-          "An unexpected error occurred";
-        toast.error(errorMsg);
-      }
-    },
-    subscribeToMessages: () => {
-      const { selectedUser } = get();
-      if (!selectedUser) return;
+  getMessages: async (userId) => {
+    set({ isMessagesLoading: true });
+    try {
+      const res = await axiosInstance.get(`/messages/${userId}`);
+      set({ messages: res.data });
+    } catch (error) {
+      toast.error(error.response.data.message);
+    } finally {
+      set({ isMessagesLoading: false });
+    }
+  },
+  sendMessage: async (messageData) => {
+    const { selectedUser, messages } = get();
+    try {
+      const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
+      set({ messages: [...messages, res.data] });
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  },
 
-      const socket = useAuthStore.getState().socket;
-      socket?.on("newMessage", (newMessage) => {
-        if (selectedUser._id !== newMessage.senderId) return;
-        set({ messages: [...get().messages, newMessage] });
+  subscribeToMessages: () => {
+    const { selectedUser } = get();
+    if (!selectedUser) return;
+
+    const socket = useAuthStore.getState().socket;
+
+    socket.on("newMessage", (newMessage) => {
+      const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
+      if (!isMessageSentFromSelectedUser) return;
+
+      set({
+        messages: [...get().messages, newMessage],
       });
-    },
-    unSubscribeToMessages: () => {
-      const socket = useAuthStore.getState().socket;
-      socket?.off("newMessage");
-    },
-  };
-});
+    });
+  },
+
+  unsubscribeFromMessages: () => {
+    const socket = useAuthStore.getState().socket;
+    socket.off("newMessage");
+  },
+
+  setSelectedUser: (selectedUser) => set({ selectedUser }),
+}));

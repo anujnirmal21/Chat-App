@@ -1,81 +1,70 @@
-import { getUserSocketId, socketServer } from "../lib/sockets.js";
-import { Message } from "../models/Message.model.js";
-import { User } from "../models/User.model.js";
-import cloudinary from "./../lib/cloudinary.js";
+import User from "../models/user.model.js";
+import Message from "../models/message.model.js";
 
-const getSidebarUsers = async (req, res) => {
+import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
+
+export const getUsersForSidebar = async (req, res) => {
   try {
-    const currentUserId = req.user._id;
-    const filteredUser = await User.find({
-      _id: { $ne: currentUserId },
-    }).select("-password");
+    const loggedInUserId = req.user._id;
+    const filteredUsers = await User.find({ _id: { $ne: loggedInUserId } }).select("-password");
 
-    return res
-      .status(200)
-      .json({ message: "users feteched successfully.", users: filteredUser });
+    res.status(200).json(filteredUsers);
   } catch (error) {
-    console.error("Error : " + error.message);
-    return res.status(500).json({ message: "internal server error." });
+    console.error("Error in getUsersForSidebar: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-const getMessages = async (req, res) => {
+export const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
-    const currentUserId = req.user._id;
+    const myId = req.user._id;
+
     const messages = await Message.find({
       $or: [
-        { senderId: currentUserId, receiverId: userToChatId },
-        { senderId: userToChatId, receiverId: currentUserId },
+        { senderId: myId, receiverId: userToChatId },
+        { senderId: userToChatId, receiverId: myId },
       ],
     });
 
-    return res
-      .status(200)
-      .json({ message: "messages fetched successfully", messages });
-  } catch {
-    console.error("Error : " + error.message);
-    return res.status(500).json({ message: "internal server error." });
+    res.status(200).json(messages);
+  } catch (error) {
+    console.log("Error in getMessages controller: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
-const sendMessage = async (req, res) => {
+export const sendMessage = async (req, res) => {
   try {
-    const { text, image } = await req.body;
-    const { id: receiverId } = await req.params;
-    const senderId = await req.user._id;
-
-    // if (!text || !image) {
-    //   return res.status(401).json({ message: "all fields cannot be empty." });
-    // }
+    const { text, image } = req.body;
+    const { id: receiverId } = req.params;
+    const senderId = req.user._id;
 
     let imageUrl;
     if (image) {
-      const uploadRes = await cloudinary.uploader.upload(image);
-      imageUrl = uploadRes.secure_url;
+      // Upload base64 image to cloudinary
+      const uploadResponse = await cloudinary.uploader.upload(image);
+      imageUrl = uploadResponse.secure_url;
     }
 
-    const newMessage = await Message({
+    const newMessage = new Message({
       senderId,
       receiverId,
-      text: text,
+      text,
       image: imageUrl,
     });
 
     await newMessage.save();
 
-    //send socket message to online selected user
-    const socketId = getUserSocketId(receiverId);
-    if (socketId) {
-      socketServer.to(socketId).emit("newMessage", newMessage);
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
-    return res
-      .status(201)
-      .json({ message: "messages send successfully", messages: newMessage });
-  } catch {
-    console.error("Error : " + error.message);
-    return res.status(500).json({ message: "internal server error." });
+    res.status(201).json(newMessage);
+  } catch (error) {
+    console.log("Error in sendMessage controller: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
-export { getSidebarUsers, getMessages, sendMessage };
