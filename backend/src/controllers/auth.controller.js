@@ -1,7 +1,7 @@
 import { generateToken } from "../lib/utils.js";
-import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
+import User from "../models/user.model.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -11,7 +11,9 @@ export const signup = async (req, res) => {
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     const user = await User.findOne({ email });
