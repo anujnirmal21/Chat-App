@@ -1,3 +1,4 @@
+import { getUserSocketId, socketServer } from "../lib/sockets.js";
 import { Message } from "../models/Message.model.js";
 import { User } from "../models/User.model.js";
 import cloudinary from "./../lib/cloudinary.js";
@@ -63,7 +64,11 @@ const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    //future functionality
+    //send socket message to online selected user
+    const socketId = getUserSocketId(receiverId);
+    if (socketId) {
+      socketServer.to(socketId).emit("newMessage", newMessage);
+    }
 
     return res
       .status(201)
