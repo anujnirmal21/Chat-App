@@ -16,7 +16,16 @@ dotenv.config();
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-app.use(express.json());
+app.use(
+  express.json({
+    limit: "50mb",
+    strict: true,
+    inflate: true,
+    type: "application/json",
+    verify: undefined, // You can add a custom verify function if needed
+  })
+);
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
@@ -28,7 +37,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV !== "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get("*", (req, res) => {
