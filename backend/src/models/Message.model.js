@@ -12,6 +12,9 @@ const messageSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    groupId: {
+      type: String,
+    },
     text: {
       type: String,
     },
@@ -22,6 +25,7 @@ const messageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+messageSchema.index({ groupId: 1 });
 const Message = mongoose.model("Message", messageSchema);
 
 export default Message;
