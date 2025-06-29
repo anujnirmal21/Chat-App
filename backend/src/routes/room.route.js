@@ -4,6 +4,7 @@ import {
   createRoom,
   joinRoom,
   closeRoom,
+  getRooms,
 } from "../controllers/Room.controller.js";
 
 const roomRoutes = Router();
@@ -11,5 +12,6 @@ const roomRoutes = Router();
 roomRoutes.get("/create/:id", protectRoute, createRoom);
 roomRoutes.post("/join/:id", protectRoute, joinRoom);
 roomRoutes.get("/close/:id", protectRoute, closeRoom);
+roomRoutes.get("/close/:id", protectRoute, getRooms);
 
 export default roomRoutes;

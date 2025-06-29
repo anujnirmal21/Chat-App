@@ -5,6 +5,15 @@ const createRoom = async (req, res) => {
   try {
     const { id: userId } = req.params;
     if (!userId) return res.status(400).json({ message: "userId not found" });
+
+    const roomIdExist = await Room.findOne({ hostId: userId });
+    // console.log(roomIdExist);
+    if (roomIdExist) {
+      return res
+        .status(200)
+        .json({ message: "User has already active room ", room: roomIdExist });
+    }
+
     const roomId = uuidv4().slice(0, 6).toUpperCase();
     const newRoom = new Room({
       roomId,
@@ -16,7 +25,7 @@ const createRoom = async (req, res) => {
       await newRoom.save();
       return res
         .status(200)
-        .json({ message: "Room created successfully..", newRoom });
+        .json({ message: "Room created successfully..", room: newRoom });
     } else {
       res.status(400).json({ message: "Failed to create room" });
     }
@@ -59,13 +68,14 @@ const joinRoom = async (req, res) => {
 const closeRoom = async (req, res) => {
   try {
     const { id: userId } = req.params;
+    const { roomId } = req.body;
 
     if (!userId) {
       return res.status(400).json({ message: "userId not found" });
     }
 
     // Find the room where this user is host
-    const room = await Room.findOne({ hostId: userId });
+    const room = await Room.findOne({ hostId: userId, roomId });
 
     if (!room) {
       return res
@@ -82,5 +92,30 @@ const closeRoom = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error." });
   }
 };
+const getRooms = async (req, res) => {
+  try {
+    const { id: userId } = req.params;
 
-export { createRoom, joinRoom, closeRoom };
+    if (!userId) {
+      return res.status(400).json({ message: "userId not found" });
+    }
+
+    // Find the room where this user is host
+    const rooms = await Room.find({ hostId: userId });
+
+    if (rooms.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "User does not have any active rooms." });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Room fetched successfully.", rooms: rooms });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ message: "Internal Server Error." });
+  }
+};
+
+export { createRoom, joinRoom, closeRoom, getRooms };
