@@ -6,11 +6,10 @@ import toast from "react-hot-toast";
 const useRoomStore = create((set, get) => {
   return {
     hostId: null,
-    currentRoomId: null,
+    activeRoom: false,
     roomMembers: [],
-    allCreatedRooms: [],
-    createdRoom: null,
-    setCreatedRoom: (val) => set({ createdRoom: val }),
+    currentRoom: null,
+
     setCreateRoom: async () => {
       const { _id: userId } = useAuthStore.getState().authUser;
 
@@ -19,17 +18,29 @@ const useRoomStore = create((set, get) => {
         const newRoom = res.data.room;
         console.log(newRoom);
 
-        set({ createdRoom: newRoom });
-        set({ currentRoomId: newRoom._id });
-        set((state) => ({
-          allCreatedRooms: [...state.allCreatedRooms, newRoom],
-        }));
+        set({ currentRoom: newRoom });
         set({ hostId: userId });
 
         toast.success("Room Created Successfully");
       } catch (error) {
         console.log("error:", error);
         toast.error(error?.response?.data?.message);
+      }
+    },
+    setCurrentRoom: (val) => set({ currentRoom: val }),
+    setActiveRoom: () => set({ activeRoom: !get().activeRoom }),
+    checkRoom: async () => {
+      const { _id: userId } = useAuthStore.getState().authUser;
+      try {
+        const res = await axiosInstance.get(`/room/check/${userId}`);
+        if (res.data.room) {
+          const room = res.data.room;
+          set({ hostId: room.hostId });
+          set({ currentRoom: room });
+          set({ roomMembers: room.members });
+        }
+      } catch (error) {
+        console.log(error.response);
       }
     },
   };

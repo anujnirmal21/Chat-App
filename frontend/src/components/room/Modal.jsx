@@ -8,7 +8,7 @@ const Modal = () => {
   const [mode, setMode] = useState("create");
   const [roomId, setRoomId] = useState("");
 
-  const { setCreateRoom, createdRoom, setCreatedRoom } = useRoomStore();
+  const { setCreateRoom, currentRoom, setCurrentRoom } = useRoomStore();
 
   const handleCreateRoom = async () => {
     await setCreateRoom();
@@ -20,8 +20,8 @@ const Modal = () => {
   };
 
   const handleCopy = () => {
-    if (createdRoom?.roomId) {
-      navigator.clipboard.writeText(createdRoom.roomId);
+    if (currentRoom?.roomId) {
+      navigator.clipboard.writeText(currentRoom.roomId);
       toast.success("Room ID copied to clipboard");
     }
   };
@@ -29,7 +29,6 @@ const Modal = () => {
   const handleModalClose = () => {
     setMode("create");
     setRoomId("");
-    setCreatedRoom(null);
   };
 
   useEffect(() => {
@@ -65,7 +64,7 @@ const Modal = () => {
           </form>
 
           <h3 className="text-xl font-bold mb-6 text-center">
-            {createdRoom
+            {currentRoom
               ? "Room Created!"
               : mode === "create"
               ? "Create a New Room"
@@ -73,19 +72,21 @@ const Modal = () => {
           </h3>
 
           {/* === Created Room === */}
-          {createdRoom ? (
+          {currentRoom ? (
             <div className="flex flex-col items-center gap-4">
               <p className="text-gray-600">Share this Room ID with others:</p>
-              <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-md">
-                <span className="font-mono text-lg font-bold">
-                  {createdRoom.roomId}
-                </span>
+              <div className=" flex gap-3 justify-center items-center">
+                <div className="flex items-center gap-2 border border-gray-400 px-4 py-2 rounded-md h-[40px]">
+                  <span className="font-mono text-2xl font-bold text-gray-200">
+                    {currentRoom.roomId}
+                  </span>
+                </div>
                 <button
                   onClick={handleCopy}
-                  className="btn btn-sm btn-outline tooltip"
+                  className="btn btn-sm btn-outline tooltip h-full"
                   data-tip="Copy Room ID"
                 >
-                  <FaRegCopy />
+                  <FaRegCopy className=" h-[40px] w-[15px]" />
                 </button>
               </div>
               <form method="dialog" className="w-full">
