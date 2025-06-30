@@ -8,15 +8,14 @@ const Modal = () => {
   const [mode, setMode] = useState("create");
   const [roomId, setRoomId] = useState("");
 
-  const { setCreateRoom, currentRoom, setCurrentRoom } = useRoomStore();
+  const { setCreateRoom, currentRoom, setJoinRoom } = useRoomStore();
 
   const handleCreateRoom = async () => {
     await setCreateRoom();
   };
 
-  const handleJoinRoom = () => {
-    console.log("Joining room with ID:", roomId);
-    // TODO: Implement joinRoom logic here
+  const handleJoinRoom = async () => {
+    await setJoinRoom(roomId);
   };
 
   const handleCopy = () => {
