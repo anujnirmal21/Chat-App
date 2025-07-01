@@ -2,12 +2,16 @@ import { useRef, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
+import useRoomStore from "../store/useRoomStore";
+import { useRoomChatStore } from "../store/useRoomChatStore";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
+  const { currentRoom, activeRoom } = useRoomStore();
+  const { sendRoomMessage } = useRoomChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -33,10 +37,19 @@ const MessageInput = () => {
     if (!text.trim() && !imagePreview) return;
 
     try {
-      await sendMessage({
-        text: text.trim(),
-        image: imagePreview,
-      });
+      if (activeRoom) {
+        await sendRoomMessage({
+          text: text.trim(),
+          image: imagePreview,
+          roomId: currentRoom?.roomId,
+        });
+      } else {
+        await sendMessage({
+          text: text.trim(),
+          image: imagePreview,
+          roomId: currentRoom?.roomId,
+        });
+      }
 
       // Clear form
       setText("");
