@@ -3,16 +3,14 @@ import Room from "../models/Room.model.js";
 export const RoomSocketHandler = (socket, io) => {
   socket.on("join-room", async ({ roomId }) => {
     try {
-      const room = await Room.findOne({ roomId }).populate({
-        path: "members",
-        select: "-password",
-      });
-
+      const room = await Room.findOne({ roomId }).populate(
+        "members",
+        "-password"
+      );
       if (!room) return socket.emit("room-error", "Room not found");
 
-      socket.join(roomId); // Socket joins room
+      socket.join(roomId);
 
-      // ✅ Send latest members to all in the room
       io.to(roomId).emit("room-members", room.members);
     } catch (error) {
       console.error("Join-room error:", error);
@@ -20,13 +18,29 @@ export const RoomSocketHandler = (socket, io) => {
     }
   });
 
+  // Real-time message sending
+  socket.on("send-room-message", async ({ roomId, text, image, senderId }) => {
+    try {
+      const newMessage = {
+        roomId,
+        senderId,
+        text,
+        image,
+      };
+
+      io.emit("room-message", newMessage);
+    } catch (error) {
+      console.error("send-room-message error:", error.message);
+      socket.emit("room-error", "Message send failed");
+    }
+  });
+
   socket.on("leave-room", async ({ roomId }) => {
     try {
-      const room = await Room.findOne({ roomId }).populate({
-        path: "members",
-        select: "-password",
-      });
-
+      const room = await Room.findOne({ roomId }).populate(
+        "members",
+        "-password"
+      );
       if (room) {
         io.to(roomId).emit("room-members", room.members);
       }

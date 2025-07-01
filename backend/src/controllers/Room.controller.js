@@ -1,3 +1,4 @@
+import Message from "../models/Message.model.js";
 import Room from "../models/Room.model.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -86,6 +87,7 @@ const closeRoom = async (req, res) => {
         .status(403)
         .json({ message: "User is not authorized to perform this action" });
     }
+    await Message.deleteMany({ roomId: room.roomId });
 
     // Delete the room
     await room.deleteOne(); // No need to pass filter, it's already a doc

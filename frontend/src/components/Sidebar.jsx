@@ -35,7 +35,10 @@ const Sidebar = () => {
           {currentRoom && (
             <button
               className={`btn btn-sm gap-2`}
-              onClick={() => setActiveRoom()}
+              onClick={() => {
+                setSelectedUser(null);
+                setActiveRoom();
+              }}
             >
               <div className="h-2 w-2 bg-green-600 mr-1 rounded-full"></div>
               <span className="hidden sm:inline text-sm">Switch to Room</span>

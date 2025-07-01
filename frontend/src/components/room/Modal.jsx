@@ -64,7 +64,7 @@ const Modal = () => {
 
           <h3 className="text-xl font-bold mb-6 text-center">
             {currentRoom
-              ? "Room Created!"
+              ? "You are in active room!"
               : mode === "create"
               ? "Create a New Room"
               : "Join a Room"}

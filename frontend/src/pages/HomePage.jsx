@@ -5,6 +5,7 @@ import NoChatSelected from "../components/NoChatSelected";
 import ChatContainer from "../components/ChatContainer";
 import RoomSideBar from "../components/RoomSideBar";
 import useRoomStore from "../store/useRoomStore";
+import RoomChatContainer from "../components/RoomChatContainer";
 
 const HomePage = () => {
   const { selectedUser } = useChatStore();
@@ -16,8 +17,9 @@ const HomePage = () => {
         <div className="bg-base-100 rounded-lg shadow-cl w-full max-w-6xl h-[calc(100vh-8rem)]">
           <div className="flex h-full rounded-lg overflow-hidden">
             {!activeRoom ? <Sidebar /> : <RoomSideBar />}
-
-            {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
+            {activeRoom && <RoomChatContainer />}
+            {!activeRoom &&
+              (!selectedUser ? <NoChatSelected /> : <ChatContainer />)}
           </div>
         </div>
       </div>

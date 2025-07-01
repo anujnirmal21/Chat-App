@@ -4,6 +4,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { Users } from "lucide-react";
 import useRoomStore from "../store/useRoomStore";
+import toast from "react-hot-toast";
 
 const RoomSideBar = () => {
   const { getUsers, isUsersLoading } = useChatStore();
@@ -21,13 +22,30 @@ const RoomSideBar = () => {
   const { onlineUsers, authUser, socket } = useAuthStore();
 
   useEffect(() => {
-    if (!socket) {
-      return;
-    }
+    if (!socket) return;
 
     const handleMembersUpdate = (members) => {
-      console.log(members);
-      useRoomStore.setState({ roomMembers: members });
+      useRoomStore.setState((state) => {
+        const prevMembers = state.roomMembers;
+        let message = "";
+
+        if (members.length > prevMembers.length) {
+          // Find the new member
+          const newMember = members.find(
+            (m) => !prevMembers.some((p) => p._id === m._id)
+          );
+          message = `${newMember?.fullName || "Someone"} joined the group`;
+        } else if (members.length < prevMembers.length) {
+          // Find the member who left
+          const leftMember = prevMembers.find(
+            (p) => !members.some((m) => m._id === p._id)
+          );
+          message = `${leftMember?.fullName || "Someone"} left the group`;
+        }
+
+        if (message) toast.success(message);
+        return { roomMembers: members };
+      });
     };
 
     socket.on("room-members", handleMembersUpdate);

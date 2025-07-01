@@ -39,7 +39,7 @@ const useRoomStore = create((set, get) => {
         set({ currentRoom: room });
         set({ hostId: room.hostId });
 
-        console.log(room.members);
+        // console.log(room.members);
         set({ roomMembers: room.members });
 
         toast.success("Joined Room Successfully");
