@@ -49,11 +49,11 @@ const Sidebar = () => {
     <>
       {/* Mobile toggle button */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 bg-base-200 p-2 rounded-full shadow"
+        className="lg:hidden fixed top-[0.55rem] left-[0.60rem] z-50 p-2 bg-base-100"
         onClick={() => setSidebarOpen((open) => !open)}
         aria-label="Toggle sidebar"
       >
-        <Menu className="size-6" />
+        <Menu className="size-8" />
       </button>
 
       {/* Sidebar */}
@@ -69,7 +69,7 @@ const Sidebar = () => {
         <div className="border-b border-base-300 w-full p-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Users className="size-6" />
+              <Users className=" opacity-0 lg:opacity-100 size-6" />
               <span className="font-medium hidden lg:block">Contacts</span>
             </div>
 
@@ -77,8 +77,8 @@ const Sidebar = () => {
           </div>
 
           {/* Online toggle */}
-          <div className="mt-3 flex items-center gap-2 text-xs lg:text-sm">
-            <label className="cursor-pointer flex items-center gap-2">
+          <div className="mt-5 flex items-center gap-2 text-xs lg:text-sm">
+            <label className="cursor-pointer flex items-center gap-2 ">
               <input
                 type="checkbox"
                 checked={showOnlineOnly}
@@ -98,7 +98,12 @@ const Sidebar = () => {
           {filteredUsers.map((user) => (
             <button
               key={user._id}
-              onClick={() => setSelectedUser(user)}
+              onClick={() => {
+                setSelectedUser(user);
+                if (sidebarOpen) {
+                  setSidebarOpen(!sidebarOpen);
+                }
+              }}
               className={`w-full p-3 flex items-center gap-3 hover:bg-base-300 transition-colors ${
                 selectedUser?._id === user._id
                   ? "bg-base-300 ring-1 ring-base-300"
