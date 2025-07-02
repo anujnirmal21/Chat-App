@@ -1,4 +1,3 @@
-import { useChatStore } from "../store/useChatStore";
 import { useEffect, useRef } from "react";
 
 import ChatHeader from "./ChatHeader";
@@ -54,46 +53,45 @@ const RoomChatContainer = () => {
       {/* <ChatHeader /> */}
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            className={`chat chat-end`}
-            ref={messageEndRef}
-          >
-            {console.log(message)}
-            <div className=" chat-image avatar">
-              <div className="size-10 rounded-full border">
-                <img
-                  src={
-                    message.senderId._id === authUser._id
-                      ? authUser.profilePic
-                      : message.senderId.profilePic
-                      ? message.senderId.profilePic
-                      : authUser.profilePic
-                  }
-                  alt="profile pic"
-                />
+        {messages.length > 0 &&
+          messages.map((message, idx) => (
+            <div
+              key={message._id ? message._id : message.senderId * Date.now()}
+              className={`chat ${idx % 2 === 0 ? "chat-end" : "chat-start"} `}
+              ref={messageEndRef}
+            >
+              <div className=" chat-image avatar">
+                <div className="size-10 rounded-full border">
+                  <img
+                    src={
+                      message.senderId.profilePic
+                        ? message.senderId.profilePic
+                        : message.senderPic
+                    }
+                    alt="profile pic"
+                  />
+                </div>
+              </div>
+
+              <div className="chat-header mb-1">
+                <time className="text-xs opacity-50 ml-1">
+                  {formatMessageTime(
+                    message.createdAt ? message.createdAt : Date.now()
+                  )}
+                </time>
+              </div>
+              <div className="chat-bubble flex flex-col">
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Attachment"
+                    className="sm:max-w-[200px] rounded-md mb-2"
+                  />
+                )}
+                {message.text && <p>{message.text}</p>}
               </div>
             </div>
-            <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
-                {formatMessageTime(
-                  message.createdAt ? message.createdAt : Date.now()
-                )}
-              </time>
-            </div>
-            <div className="chat-bubble flex flex-col">
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="sm:max-w-[200px] rounded-md mb-2"
-                />
-              )}
-              {message.text && <p>{message.text}</p>}
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       <MessageInput />

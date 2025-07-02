@@ -12,6 +12,7 @@ export const RoomSocketHandler = (socket, io) => {
       socket.join(roomId);
 
       io.to(roomId).emit("room-members", room.members);
+      socket.emit("room-joined", room.members);
     } catch (error) {
       console.error("Join-room error:", error);
       socket.emit("room-error", "Something went wrong.");
@@ -19,21 +20,25 @@ export const RoomSocketHandler = (socket, io) => {
   });
 
   // Real-time message sending
-  socket.on("send-room-message", async ({ roomId, text, image, senderId }) => {
-    try {
-      const newMessage = {
-        roomId,
-        senderId,
-        text,
-        image,
-      };
+  socket.on(
+    "send-room-message",
+    async ({ roomId, text, image, senderId, senderPic }) => {
+      try {
+        const newMessage = {
+          roomId,
+          senderId,
+          text,
+          image,
+          senderPic,
+        };
 
-      io.emit("room-message", newMessage);
-    } catch (error) {
-      console.error("send-room-message error:", error.message);
-      socket.emit("room-error", "Message send failed");
+        io.emit("room-message", newMessage);
+      } catch (error) {
+        console.error("send-room-message error:", error.message);
+        socket.emit("room-error", "Message send failed");
+      }
     }
-  });
+  );
 
   socket.on("leave-room", async ({ roomId }) => {
     try {
@@ -47,5 +52,9 @@ export const RoomSocketHandler = (socket, io) => {
     } catch (error) {
       console.error("Leave-room error:", error);
     }
+  });
+
+  socket.on("close-room", (roomId) => {
+    io.emit("room-closed");
   });
 };

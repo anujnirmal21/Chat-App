@@ -31,7 +31,6 @@ const useRoomChatStore = create((set, get) => {
           senderId: res.data.senderId,
         });
         set({ senderId: res.data.senderId });
-        set({ messages: [...messages, res.data] });
       } catch (error) {
         toast.error(error.response.data.message);
         toast.error(error.response);
