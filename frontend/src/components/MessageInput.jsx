@@ -4,6 +4,7 @@ import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
 import useRoomStore from "../store/useRoomStore";
 import { useRoomChatStore } from "../store/useRoomChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
@@ -41,6 +42,7 @@ const MessageInput = () => {
         await sendRoomMessage({
           text: text.trim(),
           image: imagePreview,
+          senderPic: useAuthStore.getState().authUser.profilePic,
           roomId: currentRoom?.roomId,
         });
       } else {

@@ -22,7 +22,9 @@ const useRoomStore = create((set, get) => {
         set({ roomMembers: newRoom.members });
         set({ hostId: userId });
         if (socket?.connected) {
-          socket.emit("join-room", { roomId: newRoom.roomId });
+          setTimeout(() => {
+            socket.emit("join-room", { roomId: newRoom.roomId });
+          }, 100); // Delay to ensure backend is ready
         }
         toast.success("Room Created Successfully");
       } catch (error) {
@@ -55,8 +57,13 @@ const useRoomStore = create((set, get) => {
 
     setCloseRoom: async () => {
       const { _id: userId } = useAuthStore.getState().authUser;
+      const { socket } = useAuthStore.getState();
       try {
         const res = await axiosInstance.post("/room/close", { userId });
+
+        if (socket?.connected) {
+          socket.emit("close-room", get().currentRoom.roomId);
+        }
         set({ currentRoom: null });
         set({ roomMembers: [] });
         set({ activeRoom: false });
