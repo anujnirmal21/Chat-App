@@ -12,7 +12,7 @@ const NoChatSelected = () => {
              justify-center animate-bounce"
             >
               <img
-                src="/public/EpheChat_logo.png"
+                src="https://res.cloudinary.com/anuj-nirmal558/image/upload/v1751472059/EpheChat_logo_v9pt5g.png"
                 className="w-8 h-8 text-primary "
               />
             </div>
