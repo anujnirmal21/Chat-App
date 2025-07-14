@@ -86,11 +86,11 @@ const RoomSideBar = () => {
     <>
       {/* Mobile toggle button */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 bg-base-200 p-2 rounded-full shadow"
+        className="lg:hidden fixed top-[0.55rem] left-[0.60rem] z-50 p-2 bg-base-100"
         onClick={() => setSidebarOpen((open) => !open)}
         aria-label="Toggle sidebar"
       >
-        <Menu className="size-6" />
+        <Menu className="size-8" />
       </button>
 
       {/* Sidebar */}
@@ -106,7 +106,7 @@ const RoomSideBar = () => {
         <div className="border-b border-base-300 w-full p-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Users className="size-6" />
+              <Users className="opacity-0 lg:opacity-100 size-6" />
               <span className="font-medium hidden lg:block">Members</span>
             </div>
 
